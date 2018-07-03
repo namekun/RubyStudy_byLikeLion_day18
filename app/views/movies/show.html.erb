@@ -1,0 +1,6 @@
+<h1><%= @movie.title%></h1>
+<hr>
+<img class="card-img-top" src="<%= @movie.image_path.thumb_fit.url %>" alt="">
+<p><%= @movie.description %></p>
+<%= link_to 'Edit', edit_movie_path(@movie) %> |
+<%= link_to 'Back', movies_path %>
