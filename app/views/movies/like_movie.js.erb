@@ -1,0 +1,15 @@
+alert("좋아요~");
+var like_count = parseInt($('.like-count').text());
+
+if(<%=@like.frozen? %>){  //삭제되었을 경우에는 사용하지 못하도록 얼어져(frozen) 있다. - 좋아요 취소된 경우
+
+// 좋아요가 취소된 경우
+// 좋아요 취소버튼 -> 좋아요 버튼
+    like_count = like_count - 1
+    $('.like').html(`좋아요(<span class='like-count'>${like_count}</span>)`).toggleClass("btn-info btn-warning text-white");
+} else {
+// 좋아요가 새로 눌린 경우
+// 좋아요 버튼 -> 좋아요 취소
+    like_count = like_count + 1
+    $('.like').html(`좋아요 취소(<span class='like-count'>${like_count}</span>)`).toggleClass("btn-warning btn-info text-white");
+}

@@ -4,5 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
          
-  has_many :movies
+  has_many :likes
+  has_many :movies, through: :likes # likes를 통해서 movie
+  has_many :comments
 end

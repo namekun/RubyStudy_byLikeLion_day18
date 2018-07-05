@@ -1,6 +1,100 @@
 <h1><%= @movie.title%></h1>
 <hr>
 <img class="card-img-top" src="<%= @movie.image_path.thumb_fit.url %>" alt="">
+<hr>
 <p><%= @movie.description %></p>
 <%= link_to 'Edit', edit_movie_path(@movie) %> |
 <%= link_to 'Back', movies_path %>
+<hr>
+<% if @user_like_movie.nil? %>
+    <button class ="btn btn-info like">좋아요(<span class='like-count'><%=@movie.likes.count%>)</span></button>
+<% else %>
+     <button class="btn btn-warning text-white like">좋아요 취소(<span class='like-count'><%=@movie.likes.count%></span>)</button>
+<% end %>
+<hr>
+<form class= "comment">
+    <div class="row">
+    <div class = "col">
+        <input class="form-control comment-contents">
+    </div>
+    <div class = "col">
+        <input type ="submit" value ="댓글 쓰기" class = "btn btn-success">
+    </div>
+    </div>
+    <hr>
+</form>
+<hr>
+<h3>댓글 목록</h3>
+<br>
+<ul class="list-group comment-list">
+    <!--<li class="list-group-item">Cras justo odio</li>-->
+    <!--기존에 등록 되어있는 댓글 출력하기-->
+    <% @movie.comments.reverse.each do |comm|%> <!--movie 하나에 달려있는 댓글들을 가져온다-->       
+        <li class = "comment-<%=comm.id%> list-group-item d-flex justify-content-between">
+            <span class="comment-detail-<%= comm.id%>"><%= comm.contents %></span>
+        <div>
+            <button data-id="<%=comm.id %>" class="btn btn-warning edit-comment text-white">수정</button>
+            <button data-id="<%=comm.id %>" class="btn btn-danger destroy-comment">삭제</button>
+        </div>
+        
+        </li> <!--그 댓글들의 주소에서 contents를 가져온다-->
+        
+    <%end%>
+</ul>
+<hr>
+<script>
+    $(document).on('ready',function(){ //html문서(document)가 준비되었을때, 자바스크립트를 로드한다.
+        $('.like').on('click', function(){
+            console.log("likey!");
+            $.ajax({
+                url: '/likes/<%= @movie.id %>'
+            });
+        })
+        $('.comment').on('submit', function(e){
+            e.preventDefault(); //기본적으로 설정되어있는 이벤트를 막겠다.
+            var comm = $('.comment-contents').val();
+            console.log(comm);
+            $.ajax({
+                url:"/movies/<%= @movie.id %>/comments",
+                method:"POST",
+                data: {
+                    contents:comm
+                }
+            })
+        });
+        
+        $(document).on('click','.destroy-comment', function(){
+            console.log("destroyed!")
+          
+            var comment_id = $(this).attr('data-id');
+            //$(this).data('id');
+            console.log(comment_id);
+            $.ajax({
+                url:"/movies/comments/" + comment_id,
+                method: "delete"
+            })
+        });
+        
+        $(document).on('click','.edit-comment', function(){
+            //$('.comment-detail').text();
+            var comment_id = $(this).data('id');
+            var edit_comment = $(`.comment-detail-${comment_id}`)
+            var contents = edit_comment.text();
+            edit_comment.html(`
+            <input type="text" value="${contents}" class="form-control edit-comment-${comment_id}">`);
+            $(this).text("확인").removeClass("edit-comment btn-warning text-white").addClass("update-comment btn-dark text-white");
+        });
+        
+        $(document).on('click','.update-comment', function(){
+            var comment_id = $(this).data('id');
+            var comment_form = $(`.edit-comment-${comment_id}`)
+            $.ajax({
+                url: "/movies/comments/" + comment_id,
+                method: "patch",
+                data: {
+                    contents:comment_form.val()
+                }
+            })
+        });
+    }); //자바 스크립트 코드를 짤때 항상 넣어주면 좋음.
+</script>

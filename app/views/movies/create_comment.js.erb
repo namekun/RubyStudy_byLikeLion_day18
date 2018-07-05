@@ -1,0 +1,13 @@
+$('.comment-list').prepend(` 
+        <li class = "comment-<%=@comment.id%> list-group-item d-flex justify-content-between">
+            <span class="comment-detail-<%=@comment.id%>"><%=@comment.contents %></span>
+        <div>
+            <button data-id="<%=@comment.id %>" class="btn btn-warning edit-comment text-white">수정</button>
+            <button data-id="<%=@comment.id %>" class="btn btn-danger destroy-comment">삭제</button>
+        </div>
+        </li>
+        `);
+//prepend는 추가되는것이 제일 위로 붙는다.(first of child)
+//append는 추가되는 것이 가장 아래로 붙는다.(last of child)
+$('.comment-contents').val('')
+alert("댓글 등록이 완료 되었습니다");
